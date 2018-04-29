@@ -2,26 +2,31 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const mongoose = require('mongoose');
+//const mongoose = require('mongoose');
 const bing = require('node-bing-api')({accKey:'ca68afaf5f654aecbbe85dce42a5a106'});
 const searchTerm = require('./model/searchTerm');
 
 //Connect mongoDB.
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/searchTerms')
+//mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/searchTerms')
 
 app.use(bodyParser.json());
 app.use(cors());
 
+const recentSearches = []
+
 // Get recent searches.
 app.get("/api/recentsearches", (req, res) => {
 
-    searchTerm.find({}, (err, data) => {
-        if(err) 
-        throw err;
+    // searchTerm.find({}, (err, data) => {
+    //     if(err) 
+    //     throw err;
 
-        res.json(data)
-    })
+    //     res.json(data)
+    // })
 
+    res.json(recentSearches)
+
+    
 })
 
 // search image.
@@ -30,18 +35,23 @@ app.get("/api/imagesearch/:searchVal", (req, res) => {
     var { searchVal } = req.params;
     var offset1 = Number(req.query.offset) || 1;
 
-    var data = new searchTerm(
-        {
-            searchVal,
-            searchDate: new Date()
-        }
-    )
+    // var data = new searchTerm(
+    //     {
+    //         searchVal,
+    //         searchDate: new Date()
+    //     }
+    // )
 
-    data.save((err) => {
-        if(err){
-        return res.send("Save error")
-        }
+    // data.save((err) => {
+    //     if(err){
+    //     return res.send("Save error")
+    //     }
 
+    // })
+
+    recentSearches.push({
+        searchVal,
+        searchDate: new Date()
     })
 
     var searchResults = [];
